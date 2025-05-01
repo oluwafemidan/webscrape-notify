@@ -1,0 +1,56 @@
+const {
+  getMonitoringState,
+  performCheck,
+} = require("../services/monitoringService");
+const { notifyAllSubscribers } = require("../services/telegramService");
+const { ApiError } = require("../utils/errorHandler");
+const logger = require("../utils/logger");
+
+/**
+ * Get current monitoring status
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ */
+const getMonitoringStatus = async (req, res) => {
+  const status = getMonitoringState();
+  res.status(200).json({
+    success: true,
+    data: status,
+  });
+};
+
+/**
+ * Trigger a manual check of the target website
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ */
+const triggerManualCheck = async (req, res) => {
+  try {
+    const checkResult = await performCheck(true);
+    res.status(200).json({
+      success: true,
+      data: {
+        message: "Manual check triggered successfully",
+        hasChanges: checkResult.hasChanges,
+        timestamp: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    throw new ApiError(500, `Failed to perform manual check: ${error.message}`);
+  }
+};
+
+const pingSubscribers = async (req, res) => {
+  notifyAllSubscribers("Ping! This is a test message.");
+  logger.info("Pinged subscribers");
+  res.status(200).json({
+    success: true,
+    message: "Pinged all subscribers successfully",
+  });
+};
+
+module.exports = {
+  pingSubscribers,
+  getMonitoringStatus,
+  triggerManualCheck,
+};
