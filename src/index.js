@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
-// const { createServer } = require("http");
+
+const { connectDB } = require("./core/db/setup");
 const logger = require("./core/logger/logger");
 const { setupMiddleware } = require("./middleware");
 const routes = require("./routes");
@@ -9,7 +10,8 @@ const { startMonitoringService } = require("./services/monitoringService");
 
 // Create Express application
 const app = express();
-// const server = createServer(app);
+
+connectDB();
 
 // Apply middleware
 setupMiddleware(app);

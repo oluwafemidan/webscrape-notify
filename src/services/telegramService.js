@@ -1,7 +1,5 @@
-const TelegramBot = require("node-telegram-bot-api");
 const logger = require("../core/logger/logger");
 const {
-  initializeTelegramBot,
   addSubscriberById,
   removeSubscriberById,
   notifyAllSubscribers,
@@ -9,9 +7,6 @@ const {
 
 // In-memory storage for subscribers
 let subscribers = [];
-
-// Create a bot instance
-initializeTelegramBot();
 
 /**
  * Add a subscriber by chat ID
@@ -48,7 +43,6 @@ const pingAllSubscribers = () => {
 };
 
 module.exports = {
-  initializeTelegramBot,
   addSubscriberByIdFn,
   removeSubscriberByIdFn,
   getSubscribersList,

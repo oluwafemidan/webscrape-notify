@@ -1,8 +1,6 @@
 const TelegramBot = require("node-telegram-bot-api");
 const logger = require("../../core/logger/logger");
-
-// In-memory storage for subscribers
-let subscribers = [];
+const { Subscriber } = require("../../models");
 
 // Create a bot instance
 let bot = null;
@@ -39,7 +37,7 @@ const initializeTelegramBot = () => {
  * Set up bot commands and handlers
  */
 const setupBotCommands = () => {
-  if (!bot) return;
+  // if (bot !== null) return;
 
   // Handle /start command
   bot.onText(/\/start/, (msg) => {
@@ -53,11 +51,11 @@ const setupBotCommands = () => {
   });
 
   // Handle /subscribe command
-  bot.onText(/\/subscribe/, (msg) => {
+  bot.onText(/\/subscribe/, async (msg) => {
     const chatId = msg.chat.id;
     const firstName = msg.from.first_name || "User";
 
-    const subscriber = addSubscriberById(chatId, firstName);
+    const subscriber = await addSubscriberById(chatId, firstName);
 
     if (subscriber) {
       bot.sendMessage(
@@ -73,10 +71,10 @@ const setupBotCommands = () => {
   });
 
   // Handle /unsubscribe command
-  bot.onText(/\/unsubscribe/, (msg) => {
+  bot.onText(/\/unsubscribe/, async (msg) => {
     const chatId = msg.chat.id;
 
-    const removed = removeSubscriberById(chatId);
+    const removed = await removeSubscriberById(chatId);
 
     if (removed) {
       bot.sendMessage(
@@ -92,7 +90,7 @@ const setupBotCommands = () => {
   });
 
   // Handle /help command
-  bot.onText(/\/help/, (msg) => {
+  bot.onText(/\/help/, async (msg) => {
     const chatId = msg.chat.id;
 
     bot.sendMessage(
@@ -109,12 +107,13 @@ const setupBotCommands = () => {
   });
 
   // Handle /status command
-  bot.onText(/\/status/, (msg) => {
+  bot.onText(/\/status/, async (msg) => {
+    const currSubscribers = await getSubscribersList();
     const chatId = msg.chat.id;
-    const isSubscribed = subscribers.some((sub) => sub.chatId === chatId);
+    const isSubscribed = currSubscribers.some((sub) => sub.chatId === chatId);
 
     if (isSubscribed) {
-      const subscriber = subscribers.find((sub) => sub.chatId === chatId);
+      const subscriber = currSubscribers.find((sub) => sub.chatId === chatId);
       const subscribedDate = new Date(subscriber.subscribedAt).toLocaleString();
 
       bot.sendMessage(
@@ -161,24 +160,24 @@ const setupBotCommands = () => {
  * @param {string} firstName - User's first name
  * @returns {object|null} The added subscriber or null if already exists
  */
-const addSubscriberById = (chatId, firstName) => {
+const addSubscriberById = async (chatId, firstName) => {
   chatId = Number(chatId);
-
+  const exists = await Subscriber.exists({ chatId });
+  console.log("exists", exists);
+  console.log("chatId", chatId);
   // Check if already subscribed
-  if (subscribers.some((sub) => sub.chatId === chatId)) {
+  if (exists) {
     logger.info(`User ${firstName} (${chatId}) is already subscribed`);
     return null;
   }
 
-  // Create new subscriber
-  const newSubscriber = {
-    chatId,
-    firstName,
-    subscribedAt: new Date(),
-    lastNotified: null,
-  };
+  const newSubscriber = await Subscriber.findOneAndUpdate(
+    { chatId },
+    { $setOnInsert: { chatId, firstName } },
+    { upsert: true, new: true }
+  );
+  console.log("newSubscriber", newSubscriber);
 
-  subscribers.push(newSubscriber);
   logger.info(`New subscriber added: ${firstName} (${chatId})`);
 
   return newSubscriber;
@@ -189,29 +188,28 @@ const addSubscriberById = (chatId, firstName) => {
  * @param {number|string} chatId - Telegram chat ID
  * @returns {boolean} True if removed, false if not found
  */
-const removeSubscriberById = (chatId) => {
+const removeSubscriberById = async (chatId) => {
   chatId = Number(chatId);
-  const initialLength = subscribers.length;
 
-  subscribers = subscribers.filter((sub) => sub.chatId !== chatId);
+  const result = await Subscriber.deleteOne({ chatId });
+  const success = result.deletedCount > 0;
 
-  const wasRemoved = subscribers.length < initialLength;
-
-  if (wasRemoved) {
+  if (success) {
     logger.info(`Subscriber ${chatId} removed successfully`);
   } else {
     logger.info(`Subscriber ${chatId} not found`);
   }
 
-  return wasRemoved;
+  return success;
 };
 
 /**
  * Get all subscribers
  * @returns {Array} List of all subscribers
  */
-const getSubscribersList = () => {
-  return [...subscribers];
+const getSubscribersList = async () => {
+  const subs = await Subscriber.find();
+  return subs;
 };
 
 /**
@@ -225,18 +223,20 @@ const notifyAllSubscribers = async (message, options = {}) => {
     logger.error("Bot not initialized");
     return [];
   }
-
-  if (subscribers.length === 0) {
-    logger.info("No subscribers to notify");
+  const currentSubscribers = await getSubscribersList();
+  if (!currentSubscribers) {
+    logger.error("No subscribers found");
     return [];
   }
 
-  logger.info(`Sending notification to ${subscribers.length} subscribers`);
+  logger.info(
+    `Sending notification to ${currentSubscribers.length} subscribers`
+  );
 
   const defaultOptions = { parse_mode: "MarkdownV2" };
   const messageOptions = { ...defaultOptions, ...options };
 
-  const sendPromises = subscribers.map(async (subscriber) => {
+  const sendPromises = currentSubscribers.map(async (subscriber) => {
     try {
       await bot.sendMessage(
         subscriber.chatId,

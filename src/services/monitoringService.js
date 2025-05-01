@@ -4,7 +4,7 @@ const {
   notifyAllSubscribers,
   initializeTelegramBot,
 } = require("../features/telegram");
-
+const { ExtractedData, Subscriber } = require("../models");
 const { extractWebPageData } = require("../core/scrapper/extractorManager");
 
 // In-memory storage for monitoring state
