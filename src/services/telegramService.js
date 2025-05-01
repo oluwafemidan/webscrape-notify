@@ -1,5 +1,5 @@
 const TelegramBot = require("node-telegram-bot-api");
-const logger = require("../utils/logger");
+const logger = require("../core/logger/logger");
 
 // In-memory storage for subscribers
 let subscribers = [];

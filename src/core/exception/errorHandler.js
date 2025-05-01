@@ -1,4 +1,4 @@
-const logger = require("./logger");
+const logger = require("../logger/logger");
 
 /**
  * Custom error class for API errors

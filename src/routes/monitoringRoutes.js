@@ -1,10 +1,10 @@
 const express = require("express");
-const { asyncHandler } = require("../utils/errorHandler");
+const { asyncHandler } = require("../core/exception/errorHandler");
 const {
   getMonitoringStatus,
   triggerManualCheck,
   pingSubscribers,
-} = require("../controllers/monitoringController");
+} = require("../controllers");
 
 const router = express.Router();
 

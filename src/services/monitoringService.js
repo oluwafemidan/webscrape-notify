@@ -1,14 +1,16 @@
 const cron = require("node-cron");
-const logger = require("../utils/logger");
-const {
-  fetchWebpage,
-  extractResultPageTableData,
-  extractHomePageMarqueeData,
-} = require("./scrapingService");
+const logger = require("../core/logger/logger");
+// const {
+//   fetchWebpage,
+//   extractResultPageTableData,
+//   extractHomePageMarqueeData,
+// } = require("./scrapingService");
 const {
   notifyAllSubscribers,
   initializeTelegramBot,
 } = require("./telegramService");
+
+const { extractWebPageData } = require("../core/scrapper/extractorManager");
 
 // In-memory storage for monitoring state
 let monitoringState = {
@@ -89,17 +91,17 @@ const performCheck = async (isManual = false) => {
     monitoringState.checks.total++;
 
     // Fetch and parse RESULT webpage
-    const resultPagetargetUrl = process.env.RESULT_PAGE_URL || "";
-    const resultPageHTML = await fetchWebpage(resultPagetargetUrl);
-    const resultPageTableData = extractResultPageTableData(resultPageHTML);
-
+    const resultData = await extractWebPageData(
+      "RESULT",
+      process.env.RESULT_PAGE_URL
+    );
     // Fetch and parse HOME webpage
-    const homePageTargetUrl = process.env.HOME_PAGE_URL || "";
-    const homePageHTML = await fetchWebpage(homePageTargetUrl);
-    const homePageTableData = extractHomePageMarqueeData(homePageHTML);
-
+    const homeData = await extractWebPageData(
+      "HOME",
+      process.env.HOME_PAGE_URL
+    );
     // Combine both page data
-    const pageTableData = [...resultPageTableData, ...homePageTableData];
+    const pageTableData = [...resultData, ...homeData];
 
     console.log("Page Table Data: ", pageTableData);
 

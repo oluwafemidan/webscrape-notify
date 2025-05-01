@@ -1,10 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 // const { createServer } = require("http");
-const logger = require("./utils/logger");
+const logger = require("./core/logger/logger");
 const { setupMiddleware } = require("./middleware");
 const routes = require("./routes");
-const { handleUncaughtErrors } = require("./utils/errorHandler");
+const { handleUncaughtErrors } = require("./core/exception/errorHandler");
 const { startMonitoringService } = require("./services/monitoringService");
 
 // Create Express application

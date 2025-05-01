@@ -1,7 +1,7 @@
 const express = require("express");
 const monitoringRoutes = require("./monitoringRoutes");
 const telegramRoutes = require("./telegramRoutes");
-const { ApiError } = require("../utils/errorHandler");
+const { ApiError } = require("../core/exception/errorHandler");
 
 const router = express.Router();
 

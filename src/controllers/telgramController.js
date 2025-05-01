@@ -1,5 +1,9 @@
-const { getSubscribersList, addSubscriberById, removeSubscriberById } = require('../services/telegramService');
-const { ApiError } = require('../utils/errorHandler');
+const {
+  getSubscribersList,
+  addSubscriberById,
+  removeSubscriberById,
+} = require("../services/telegramService");
+const { ApiError } = require("../core/exception/errorHandler");
 
 /**
  * Get all current telegram subscribers
@@ -8,18 +12,18 @@ const { ApiError } = require('../utils/errorHandler');
  */
 const getSubscribers = async (req, res) => {
   const subscribers = getSubscribersList();
-  
+
   // Hiding sensitive information
-  const safeSubscribers = subscribers.map(sub => ({
+  const safeSubscribers = subscribers.map((sub) => ({
     chatId: sub.chatId,
     firstName: sub.firstName,
-    subscribedAt: sub.subscribedAt
+    subscribedAt: sub.subscribedAt,
   }));
-  
+
   res.status(200).json({
     success: true,
     count: safeSubscribers.length,
-    data: safeSubscribers
+    data: safeSubscribers,
   });
 };
 
@@ -30,20 +34,20 @@ const getSubscribers = async (req, res) => {
  */
 const addSubscriber = async (req, res) => {
   const { chatId, firstName } = req.body;
-  
+
   if (!chatId) {
-    throw new ApiError(400, 'Chat ID is required');
+    throw new ApiError(400, "Chat ID is required");
   }
-  
-  const subscriber = addSubscriberById(chatId, firstName || 'Unknown');
-  
+
+  const subscriber = addSubscriberById(chatId, firstName || "Unknown");
+
   res.status(201).json({
     success: true,
     data: {
       chatId: subscriber.chatId,
       firstName: subscriber.firstName,
-      subscribedAt: subscriber.subscribedAt
-    }
+      subscribedAt: subscriber.subscribedAt,
+    },
   });
 };
 
@@ -54,25 +58,25 @@ const addSubscriber = async (req, res) => {
  */
 const removeSubscriber = async (req, res) => {
   const { chatId } = req.params;
-  
+
   if (!chatId) {
-    throw new ApiError(400, 'Chat ID is required');
+    throw new ApiError(400, "Chat ID is required");
   }
-  
+
   const result = removeSubscriberById(chatId);
-  
+
   if (!result) {
     throw new ApiError(404, `Subscriber with chat ID ${chatId} not found`);
   }
-  
+
   res.status(200).json({
     success: true,
-    message: `Subscriber with chat ID ${chatId} removed successfully`
+    message: `Subscriber with chat ID ${chatId} removed successfully`,
   });
 };
 
 module.exports = {
   getSubscribers,
   addSubscriber,
-  removeSubscriber
+  removeSubscriber,
 };
