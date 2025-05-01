@@ -13,7 +13,7 @@ let monitoringState = {
   lastCheckTime: null,
   lastCheckResult: null,
   scheduledJob: null,
-  previousTableData: [],
+  // previousTableData: [],
   checks: {
     total: 0,
     successful: 0,
@@ -82,6 +82,8 @@ const performCheck = async (isManual = false) => {
       `Performing ${isManual ? "manual" : "scheduled"} check of target website`
     );
 
+    const prevExtractedData = await ExtractedData.find();
+
     // Increment check counter
     monitoringState.checks.total++;
 
@@ -101,10 +103,7 @@ const performCheck = async (isManual = false) => {
     console.log("Page Table Data: ", pageTableData);
 
     // Find new rows (not in previous data)
-    const newRows = findNewRows(
-      pageTableData,
-      monitoringState.previousTableData
-    );
+    const newRows = findNewRows(pageTableData, prevExtractedData);
 
     // Update check result
     const result = {
@@ -117,16 +116,15 @@ const performCheck = async (isManual = false) => {
     // Update monitoring state
     monitoringState.lastCheckTime = result.timestamp;
     monitoringState.lastCheckResult = result;
-    monitoringState.previousTableData = pageTableData;
     monitoringState.checks.successful++;
+
+    // save records to DB
+    await insertExtractedData(pageTableData);
 
     if (result.hasChanges) {
       monitoringState.checks.withChanges++;
-      // await notifySubscribersAboutChanges(newRows);
+      await notifySubscribersAboutChanges(newRows);
     }
-
-    // DELETE THIS LINE
-    await notifySubscribersAboutChanges(pageTableData);
 
     logger.info(
       `Check completed. Found ${newRows.length} new rows out of ${pageTableData.length} total rows.`
@@ -145,6 +143,20 @@ const performCheck = async (isManual = false) => {
 
     logger.error(`Check failed: ${error.message}`);
     throw error;
+  }
+};
+
+/**
+ * Insert extracted data into the database
+ * @param {Array} items - Array of items to insert
+ */
+const insertExtractedData = async (items) => {
+  for (const item of items) {
+    await ExtractedData.updateOne(
+      { id: item.id },
+      { $setOnInsert: item },
+      { upsert: true }
+    );
   }
 };
 

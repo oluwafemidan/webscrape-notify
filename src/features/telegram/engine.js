@@ -163,8 +163,6 @@ const setupBotCommands = () => {
 const addSubscriberById = async (chatId, firstName) => {
   chatId = Number(chatId);
   const exists = await Subscriber.exists({ chatId });
-  console.log("exists", exists);
-  console.log("chatId", chatId);
   // Check if already subscribed
   if (exists) {
     logger.info(`User ${firstName} (${chatId}) is already subscribed`);
