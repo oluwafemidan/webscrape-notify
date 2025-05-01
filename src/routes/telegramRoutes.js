@@ -4,12 +4,16 @@ const {
   getSubscribers,
   addSubscriber,
   removeSubscriber,
+  pingSubscribers,
 } = require("../controllers/telgramController");
 
 const router = express.Router();
 
 // Get all subscribers (admin only)
 router.get("/subscribers", asyncHandler(getSubscribers));
+
+// Ping all subscribers (admin only)
+router.post("/subscirbers/ping", asyncHandler(pingSubscribers));
 
 // Add a subscriber manually (admin only)
 router.post("/subscribers", asyncHandler(addSubscriber));

@@ -1,7 +1,8 @@
 const {
   getSubscribersList,
-  addSubscriberById,
-  removeSubscriberById,
+  addSubscriberByIdFn,
+  removeSubscriberByIdFn,
+  pingAllSubscribers,
 } = require("../services/telegramService");
 const { ApiError } = require("../core/exception/errorHandler");
 
@@ -28,6 +29,19 @@ const getSubscribers = async (req, res) => {
 };
 
 /**
+ * Ping all telegram subscribers
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ */
+const pingSubscribers = async (req, res) => {
+  pingAllSubscribers();
+  res.status(200).json({
+    success: true,
+    message: "Pinged all subscribers successfully",
+  });
+};
+
+/**
  * Add a telegram subscriber manually
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
@@ -39,7 +53,7 @@ const addSubscriber = async (req, res) => {
     throw new ApiError(400, "Chat ID is required");
   }
 
-  const subscriber = addSubscriberById(chatId, firstName || "Unknown");
+  const subscriber = addSubscriberByIdFn(chatId, firstName || "Unknown");
 
   res.status(201).json({
     success: true,
@@ -63,7 +77,7 @@ const removeSubscriber = async (req, res) => {
     throw new ApiError(400, "Chat ID is required");
   }
 
-  const result = removeSubscriberById(chatId);
+  const result = removeSubscriberByIdFn(chatId);
 
   if (!result) {
     throw new ApiError(404, `Subscriber with chat ID ${chatId} not found`);
@@ -76,6 +90,7 @@ const removeSubscriber = async (req, res) => {
 };
 
 module.exports = {
+  pingSubscribers,
   getSubscribers,
   addSubscriber,
   removeSubscriber,

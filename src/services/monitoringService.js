@@ -1,14 +1,9 @@
 const cron = require("node-cron");
 const logger = require("../core/logger/logger");
-// const {
-//   fetchWebpage,
-//   extractResultPageTableData,
-//   extractHomePageMarqueeData,
-// } = require("./scrapingService");
 const {
   notifyAllSubscribers,
   initializeTelegramBot,
-} = require("./telegramService");
+} = require("../features/telegram");
 
 const { extractWebPageData } = require("../core/scrapper/extractorManager");
 

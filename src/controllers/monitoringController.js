@@ -1,7 +1,6 @@
 const {
   performCheck,
   getMonitoringState,
-  notifyAllSubscribers,
 } = require("../services");
 const { ApiError } = require("../core/exception/errorHandler");
 const logger = require("../core/logger/logger");
@@ -40,17 +39,7 @@ const triggerManualCheck = async (req, res) => {
   }
 };
 
-const pingSubscribers = async (req, res) => {
-  notifyAllSubscribers("Ping! This is a test message.");
-  logger.info("Pinged subscribers");
-  res.status(200).json({
-    success: true,
-    message: "Pinged all subscribers successfully",
-  });
-};
-
 module.exports = {
-  pingSubscribers,
   getMonitoringStatus,
   triggerManualCheck,
 };
