@@ -4,7 +4,11 @@ const {
   initializeTelegramBot,
 } = require("../features/telegram");
 const { ExtractedData } = require("../models");
+const { fetchWebpage } = require("./scrapingService");
 const { extractWebPageData } = require("../core/scrapper/extractorManager");
+const HomePageExtractor = require("../features/homepage");
+const ResultPageExtractor = require("../features/resultpage");
+
 const {
   scheduleJobMinutes,
   stopScheduledJob,
@@ -81,17 +85,27 @@ const performCheck = async (isManual = false) => {
     // Increment check counter
     monitoringState.checks.total++;
 
+    const extractors = {
+      RESULT: new ResultPageExtractor(),
+      HOME: new HomePageExtractor(),
+    };
+
+    const h_html = await fetchWebpage(process.env.HOME_PAGE_URL);
+    const homeData = extractors.HOME.extract(h_html);
+
     // Fetch and parse RESULT webpage
-    const resultData = await extractWebPageData(
-      "RESULT",
-      process.env.RESULT_PAGE_URL
-    );
+    // const resultData = await extractWebPageData(
+    //   "RESULT",
+    //   process.env.RESULT_PAGE_URL
+    // );
     // Fetch and parse HOME webpage
-    const homeData = await extractWebPageData(
-      "HOME",
-      process.env.HOME_PAGE_URL
-    );
+    // const homeData = await extractWebPageData(
+    //   "HOME",
+    //   process.env.HOME_PAGE_URL
+    // );
     // Combine both page data
+    const resultData = [];
+
     const pageTableData = [...resultData, ...homeData];
 
     console.log("Page Table Data: ", pageTableData);
