@@ -17,12 +17,7 @@ const fetchWebpage = async (targetUrl) => {
 
     logger.info(`Fetching webpage: ${targetUrl}`);
 
-    const response = await axios.get(targetUrl, {
-      headers: {
-        Accept: "text/html",
-      },
-      timeout: 30000, // 30 seconds timeout
-    });
+    const response = await axios.get(targetUrl);
 
     logger.info(`Response header: ${response.headers["content-type"]}`);
     logger.info(response.data.slice(0, 500));
