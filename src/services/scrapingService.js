@@ -27,7 +27,7 @@ const fetchWebpage = async (targetUrl) => {
         "Cache-Control": "no-cache",
         Pragma: "no-cache",
       },
-      timeout: 10000, // 10 seconds timeout
+      timeout: 60000, // 10 seconds timeout
     });
 
     if (response.status !== 200) {
