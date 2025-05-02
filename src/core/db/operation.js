@@ -6,6 +6,12 @@ const logger = require("../../core/logger/logger");
 const limit = process.env.EXTRACTED_DATA_LIMIT; // Max items you want to keep
 
 const scheduleDeleteOldData = () => {
+  if (String(process.env.SCHEDULING_ENABLED).toLowerCase() !== "true") {
+    logger.info(
+      "Scheduling disabled. Unable to schedule scheduleDeleteOldData job."
+    );
+    return;
+  }
   // schedule a job
   const HOURS = process.env.DELETE_DATA_INTERVAL_HOURS || 12; // Default to 12 hour
   scheduleJobHours(HOURS, async () => {

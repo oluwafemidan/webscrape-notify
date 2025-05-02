@@ -1,14 +1,17 @@
 const cron = require("node-cron");
+const logger = require("../logger/logger");
 
 const scheduledJobs = [];
 
-const INDIAN_TIME_ZONE = "Asia/Kolkata"; // Set the timezone to India Standard Time (IST)
-
 const options = {
-  timezone: INDIAN_TIME_ZONE,
+  timezone: process.env.INDIAN_TIME_ZONE || "Asia/Kolkata",
 };
 
 const scheduleJobSeconds = (seconds, jobToSchedule) => {
+  if (String(process.env.SCHEDULING_ENABLED).toLowerCase() !== "true") {
+    logger.info("Scheduling disabled. Unable to schedule cron job.");
+    return null;
+  }
   const cronExpression = `*/${seconds} * * * * *`; // Run every X seconds
   const job = cron.schedule(cronExpression, jobToSchedule, options);
 
@@ -17,6 +20,10 @@ const scheduleJobSeconds = (seconds, jobToSchedule) => {
 };
 
 const scheduleJobMinutes = (minutes, jobToSchedule) => {
+  if (String(process.env.SCHEDULING_ENABLED).toLowerCase() !== "true") {
+    logger.info("Scheduling disabled. Unable to schedule cron job.");
+    return null;
+  }
   const cronExpression = `*/${minutes} * * * *`; // Run every X minutes
   const job = cron.schedule(cronExpression, jobToSchedule, options);
   scheduledJobs.push(job);
@@ -24,6 +31,10 @@ const scheduleJobMinutes = (minutes, jobToSchedule) => {
 };
 
 const scheduleJobHours = (hours, jobToSchedule) => {
+  if (String(process.env.SCHEDULING_ENABLED).toLowerCase() !== "true") {
+    logger.info("Scheduling disabled. Unable to schedule cron job.");
+    return null;
+  }
   const cronExpression = `0 */${hours} * * *`; // Run every X hours
   const job = cron.schedule(cronExpression, jobToSchedule, options);
 
@@ -32,6 +43,10 @@ const scheduleJobHours = (hours, jobToSchedule) => {
 };
 
 const stopScheduledJob = (job) => {
+  if (!job) {
+    logger.error("Job is not defined");
+    return;
+  }
   job.stop();
   const index = scheduledJobs.indexOf(job);
   if (index > -1) {

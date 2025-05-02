@@ -11,7 +11,7 @@ let bot = null;
  */
 const initializeTelegramBot = () => {
   if (bot) {
-    return;
+    return bot;
   }
   if (!process.env.TELEGRAM_BOT_TOKEN) {
     logger.error("TELEGRAM_BOT_TOKEN is not defined in environment variables");

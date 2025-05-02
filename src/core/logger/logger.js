@@ -1,4 +1,5 @@
 const winston = require("winston");
+const moment = require("moment-timezone");
 
 const logLevels = {
   error: 0,
@@ -22,7 +23,12 @@ const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || getLogLevel(),
   levels: logLevels,
   format: winston.format.combine(
-    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    winston.format.timestamp({
+      format: () =>
+        moment()
+          .tz(process.env.INDIAN_TIME_ZONE || "Asia/Kolkata")
+          .format("YYYY-MM-DD HH:mm:ss"),
+    }),
     winston.format.errors({ stack: true }),
     winston.format.splat(),
     winston.format.json()

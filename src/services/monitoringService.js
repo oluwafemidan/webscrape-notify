@@ -30,9 +30,6 @@ let monitoringState = {
  */
 const startMonitoringService = () => {
   try {
-    // Initialize Telegram bot
-    initializeTelegramBot();
-
     // Schedule a job
     const MINUTES = process.env.CHECK_INTERVAL_MINUTES || 15;
     const job = scheduleJobMinutes(MINUTES, async () => {
@@ -42,10 +39,6 @@ const startMonitoringService = () => {
     // Update state
     monitoringState.scheduledJob = job;
     monitoringState.isRunning = true;
-
-    logger.info(
-      `Monitoring service started, checking every ${MINUTES} minutes`
-    );
 
     // Perform initial check
     performCheck();

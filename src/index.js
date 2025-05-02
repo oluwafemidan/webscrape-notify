@@ -7,7 +7,7 @@ const { setupMiddleware } = require("./middleware");
 const routes = require("./routes");
 const { handleUncaughtErrors } = require("./core/exception/errorHandler");
 const { startMonitoringService } = require("./services/monitoringService");
-
+const { initializeTelegramBot } = require("./features/telegram");
 // Create Express application
 const app = express();
 
@@ -32,7 +32,8 @@ app.listen(PORT, () => {
       process.env.NODE_ENV || "development"
     } mode`
   );
-
+  // Initialize Telegram bot
+  initializeTelegramBot();
   // Start the monitoring service after server is running
   startMonitoringService();
 });
