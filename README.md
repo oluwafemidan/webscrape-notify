@@ -1,6 +1,6 @@
-# Notification Service Telegram Bot
+# Web Scrape Notify
 
-A NodeJS Application that monitors a website for changes, scrap webpage and sends notifications via Telegram when updates are detected.
+A modular NodeJS web scraping-based notification system for tracking website updates and sending alerts via Telegram, email, and more.
 
 ## Features
 
