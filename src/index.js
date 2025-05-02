@@ -50,3 +50,5 @@ process.on("uncaughtException", (err) => {
   // For uncaught exceptions, it's safer to exit and let the process manager restart
   process.exit(1);
 });
+
+module.exports = app;
