@@ -6,8 +6,8 @@ const {
 const { ExtractedData } = require("../models");
 const { fetchWebpage } = require("./scrapingService");
 const { extractWebPageData } = require("../core/scrapper/extractorManager");
-const HomePageExtractor = require("../features/homepage");
-const ResultPageExtractor = require("../features/resultpage");
+const ResultPageExtractor = require("../features/resultpage/ResultPageExtractor");
+const HomePageExtractor = require("../features/homepage/HomePageExtractor");
 
 const {
   scheduleJobMinutes,
@@ -86,7 +86,7 @@ const performCheck = async (isManual = false) => {
     monitoringState.checks.total++;
 
     const extractors = {
-      RESULT: new ResultPageExtractor(),
+      // RESULT: new ResultPageExtractor(),
       HOME: new HomePageExtractor(),
     };
 
