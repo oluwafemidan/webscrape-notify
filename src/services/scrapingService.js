@@ -19,12 +19,7 @@ const fetchWebpage = async (targetUrl) => {
 
     const response = await axios.get(targetUrl, {
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
         Accept: "text/html",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Cache-Control": "no-cache",
-        Pragma: "no-cache",
       },
       timeout: 30000, // 30 seconds timeout
     });
