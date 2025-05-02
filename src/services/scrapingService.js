@@ -21,14 +21,16 @@ const fetchWebpage = async (targetUrl) => {
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
-        Accept:
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.5",
+        Accept: "text/html",
+        "Accept-Language": "en-US,en;q=0.9",
         "Cache-Control": "no-cache",
         Pragma: "no-cache",
       },
       timeout: 30000, // 30 seconds timeout
     });
+
+    logger.info(`Response header: ${response.headers["content-type"]}`);
+    logger.info(response.data.slice(0, 500));
 
     if (response.status !== 200) {
       throw new Error(`Received non-200 response: ${response.status}`);
