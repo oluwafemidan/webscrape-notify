@@ -4,10 +4,7 @@ const { scheduleDeleteOldData } = require("./operation");
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGODB_URI);
     logger.info("✅ MongoDB connected");
     scheduleDeleteOldData();
   } catch (error) {

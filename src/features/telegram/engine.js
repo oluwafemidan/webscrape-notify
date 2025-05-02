@@ -110,6 +110,10 @@ const setupBotCommands = () => {
   bot.onText(/\/status/, async (msg) => {
     const currSubscribers = await getSubscribersList();
     const chatId = msg.chat.id;
+    logger.info("chatId : " + chatId);
+    currSubscribers.forEach((c) => {
+      logger.info(d);
+    });
     const isSubscribed = currSubscribers.some((sub) => sub.chatId === chatId);
 
     if (isSubscribed) {
