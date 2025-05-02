@@ -1,11 +1,14 @@
-const cron = require("node-cron");
 const logger = require("../core/logger/logger");
 const {
   notifyAllSubscribers,
   initializeTelegramBot,
 } = require("../features/telegram");
-const { ExtractedData, Subscriber } = require("../models");
+const { ExtractedData } = require("../models");
 const { extractWebPageData } = require("../core/scrapper/extractorManager");
+const {
+  scheduleJobMinutes,
+  stopScheduledJob,
+} = require("../core/schedule/schedule");
 
 // In-memory storage for monitoring state
 let monitoringState = {
@@ -30,20 +33,18 @@ const startMonitoringService = () => {
     // Initialize Telegram bot
     initializeTelegramBot();
 
-    // Set up scheduled job
-    const interval = process.env.CHECK_INTERVAL_MINUTES || 15;
-    const cronExpression = `*/${interval} * * * *`; // Run every X minutes
-
-    // Create cron job
-    monitoringState.scheduledJob = cron.schedule(cronExpression, async () => {
+    // Schedule a job
+    const MINUTES = process.env.CHECK_INTERVAL_MINUTES || 15;
+    const job = scheduleJobMinutes(MINUTES, async () => {
       await performCheck();
     });
 
     // Update state
+    monitoringState.scheduledJob = job;
     monitoringState.isRunning = true;
 
     logger.info(
-      `Monitoring service started, checking every ${interval} minutes`
+      `Monitoring service started, checking every ${MINUTES} minutes`
     );
 
     // Perform initial check
@@ -61,7 +62,7 @@ const startMonitoringService = () => {
  */
 const stopMonitoringService = () => {
   if (monitoringState.scheduledJob) {
-    monitoringState.scheduledJob.stop();
+    stopScheduledJob(monitoringState.scheduledJob);
     monitoringState.scheduledJob = null;
     monitoringState.isRunning = false;
     logger.info("Monitoring service stopped");

@@ -1,4 +1,4 @@
-const cron = require("node-cron");
+const { scheduleJobHours } = require("../../core/schedule/schedule");
 
 const { ExtractedData } = require("../../models");
 const logger = require("../../core/logger/logger");
@@ -6,10 +6,9 @@ const logger = require("../../core/logger/logger");
 const limit = process.env.EXTRACTED_DATA_LIMIT; // Max items you want to keep
 
 const scheduleDeleteOldData = () => {
-  const interval = process.env.DELETE_DATA_INTERVAL_HOURS || 12; // Default to 12 hour
-  const cronExpression = `0 */${interval} * * *`; // Run every X hours
-  // Create cron job
-  const job = cron.schedule(cronExpression, async () => {
+  // schedule a job
+  const HOURS = process.env.DELETE_DATA_INTERVAL_HOURS || 12; // Default to 12 hour
+  scheduleJobHours(HOURS, async () => {
     try {
       await cleanupOldExtractedData();
       logger.info(`Old extracted data cleaned up at ${new Date()}`);
@@ -17,8 +16,9 @@ const scheduleDeleteOldData = () => {
       logger.info(`Error cleaning up old extracted data: ${error.message}`);
     }
   });
+
   logger.info(
-    `Scheduled job to delete old extracted data every ${interval} hours`
+    `Scheduled job to delete old extracted data every ${HOURS} hours`
   );
 };
 
