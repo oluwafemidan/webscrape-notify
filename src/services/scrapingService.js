@@ -15,12 +15,9 @@ const fetchWebpage = async (targetUrl) => {
       );
     }
 
-    logger.info(`Fetching webpage: ${targetUrl}`);
+    logger.info(`Fetching webpage from url: ${targetUrl}`);
 
     const response = await axios.get(targetUrl);
-
-    logger.info(`Response header: ${response.headers["content-type"]}`);
-    logger.info(response.data.slice(0, 500));
 
     if (response.status !== 200) {
       throw new Error(`Received non-200 response: ${response.status}`);

@@ -40,6 +40,10 @@ const startMonitoringService = () => {
       await performCheck();
     });
 
+    if (job) {
+      logger.info(`Job scheduled to check every ${MINUTES} Minutes.`);
+    }
+
     // Update state
     monitoringState.scheduledJob = job;
     monitoringState.isRunning = true;
@@ -85,34 +89,28 @@ const performCheck = async (isManual = false) => {
     // Increment check counter
     monitoringState.checks.total++;
 
-    const extractors = {
-      // RESULT: new ResultPageExtractor(),
-      HOME: new HomePageExtractor(),
-    };
-
-    const h_html = await fetchWebpage(process.env.HOME_PAGE_URL);
-    const homeData = extractors.HOME.extract(h_html);
-
     // Fetch and parse RESULT webpage
     // const resultData = await extractWebPageData(
     //   "RESULT",
     //   process.env.RESULT_PAGE_URL
     // );
     // Fetch and parse HOME webpage
-    // const homeData = await extractWebPageData(
-    //   "HOME",
-    //   process.env.HOME_PAGE_URL
-    // );
+    const homeData = await extractWebPageData(
+      "HOME",
+      process.env.HOME_PAGE_URL
+    );
     // Combine both page data
     const resultData = [];
 
     const pageTableData = [...resultData, ...homeData];
 
-    console.log("Page Table Data: ", pageTableData);
-
     // Find new rows (not in previous data)
     const newRows = findNewRows(pageTableData, prevExtractedData);
 
+    logger.info(`New Rows found : ${newRows.length}`);
+    if (newRows.length) {
+      newRows.forEach((r) => logger.info(r));
+    }
     // Update check result
     const result = {
       timestamp: new Date(),
