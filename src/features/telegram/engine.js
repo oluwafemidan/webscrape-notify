@@ -112,12 +112,16 @@ const setupBotCommands = () => {
     const chatId = msg.chat.id;
     logger.info("chatId : " + chatId);
     currSubscribers.forEach((c) => {
-      logger.info(d);
+      logger.info(c);
     });
-    const isSubscribed = currSubscribers.some((sub) => sub.chatId === chatId);
+    const isSubscribed = currSubscribers.some(
+      (sub) => (sub) => String(sub.chatId) === String(chatId)
+    );
 
     if (isSubscribed) {
-      const subscriber = currSubscribers.find((sub) => sub.chatId === chatId);
+      const subscriber = currSubscribers.find(
+        (sub) => String(sub.chatId) === String(chatId)
+      );
       const subscribedDate = new Date(subscriber.subscribedAt).toLocaleString();
 
       bot.sendMessage(

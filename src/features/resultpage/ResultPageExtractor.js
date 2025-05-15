@@ -3,7 +3,7 @@ const cheerio = require("cheerio");
 const logger = require("../../core/logger/logger");
 const { createRowId } = require("../../utils/common");
 
-const maxRowToParse = 3; // Limit to 3 rows for performance
+const maxRowToParse = process.env.MAX_ROWS_TO_PARSE; // Limit to 3 rows for performance
 class ResultPageExtractor extends BaseExtractor {
   constructor() {
     super();

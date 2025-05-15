@@ -221,17 +221,17 @@ const formatNotificationMessage = (newRows) => {
     newRows.length === 1 ? "" : "s"
   }:\n\n`;
 
-  // Add rows (max 3 to avoid message size limits)
-  const rowsToShow = newRows.slice(0, 6);
+  // Limit max rows to send in notification
+  const rowsToShow = newRows.slice(
+    0,
+    process.env.MAX_ROWS_TO_SEND_NOTIFICATION
+  );
 
   rowsToShow.forEach((row, index) => {
     message += `${index + 1}. `;
 
     // Format row data
-    const rowData = Object.entries(row)
-      .filter(([key]) => key !== "id") // Skip ID field
-      .map(([key, value]) => value)
-      .join(" - ");
+    const rowData = `${row.title} - (${row.link})`;
 
     message += `${rowData}\n`;
   });

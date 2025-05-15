@@ -3,7 +3,7 @@ const cheerio = require("cheerio");
 const logger = require("../../core/logger/logger");
 const { createRowId } = require("../../utils/common");
 
-const maxRowToParse = 3; // Limit to 3 rows for performance
+const maxRowToParse = process.env.MAX_ROWS_TO_PARSE; // Limit rows for performance
 
 class HomePageExtractor extends BaseExtractor {
   constructor() {
@@ -41,7 +41,7 @@ class HomePageExtractor extends BaseExtractor {
 
         // Handle relative URLs
         if (link && !link.startsWith("http")) {
-          link = `https://baseurl.com/${link}`;
+          link = `https://${process.env.BASE_URL}/${link}`;
         }
 
         const row = {
