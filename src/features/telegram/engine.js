@@ -43,11 +43,12 @@ const setupBotCommands = () => {
   bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const firstName = msg.from.first_name || "User";
-
-    bot.sendMessage(
-      chatId,
-      `Hello ${firstName}! 👋\n\nI'll notify you about new results. Use /subscribe to start receiving notifications.`
-    );
+    const message = `👋 Hello ${
+      firstName ? firstName : ""
+    }!\n\nWelcome to *NotifyMe Job Bot* — a smart bot to help you stay updated on the latest job results and notifications.\n\n📍 *Currently, this bot only supports job alerts for Tripura.*\n\n✅ Type /subscribe to start receiving notifications. \n\n🤖  Type /help to see all available commands.`;
+    bot.sendMessage(chatId, escapeMarkdown(message), {
+      parse_mode: "MarkdownV2",
+    });
   });
 
   // Handle /subscribe command
@@ -56,17 +57,18 @@ const setupBotCommands = () => {
     const firstName = msg.from.first_name || "User";
 
     const subscriber = await addSubscriberById(chatId, firstName);
+    const message = `✅ You're now *subscribed* to receive notifications!\n\n📢 I’ll notify you whenever new jobs are published. Stay tuned! 😉\n\n🤖 Type /help to see all available commands.`;
 
     if (subscriber) {
-      bot.sendMessage(
-        chatId,
-        `✅ You're now subscribed to receive notifications!\n\nI'll send you a message whenever new results are published.`
-      );
+      bot.sendMessage(chatId, escapeMarkdown(message), {
+        parse_mode: "MarkdownV2",
+      });
     } else {
-      bot.sendMessage(
-        chatId,
-        `You're already subscribed! Use /unsubscribe if you want to stop receiving notifications.`
-      );
+      const message = `🔔 You're already *subscribed*!\n\nWant to stop notifications?\nJust hit /unsubscribe anytime.`;
+
+      bot.sendMessage(chatId, escapeMarkdown(message), {
+        parse_mode: "MarkdownV2",
+      });
     }
   });
 
@@ -75,12 +77,12 @@ const setupBotCommands = () => {
     const chatId = msg.chat.id;
 
     const removed = await removeSubscriberById(chatId);
+    const message = `🔕 You’ve been unsubscribed. No more job alerts… for now 😌\n\n😉 Changed your mind?\nJust /subscribe again — and we’ll start notifying you again.`;
 
     if (removed) {
-      bot.sendMessage(
-        chatId,
-        `You've been unsubscribed. You won't receive any more notifications.\n\nUse /subscribe to start receiving notifications again.`
-      );
+      bot.sendMessage(chatId, escapeMarkdown(message), {
+        parse_mode: "MarkdownV2",
+      });
     } else {
       bot.sendMessage(
         chatId,
