@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
+    "start:prod": "env=production BRODCAST_TELEGRAM_MESSAGE=true SCHEDULING_ENABLED=true node src/index.js",
     "dev": "nodemon src/index.js",
     "vercel-build": "echo 'Build step completed'",
     "lint": "eslint .",
