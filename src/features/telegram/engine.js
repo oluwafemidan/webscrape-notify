@@ -231,6 +231,10 @@ const notifyAllSubscribers = async (message, options = {}) => {
     logger.error("Bot not initialized");
     return [];
   }
+  if (process.env.BRODCAST_TELEGRAM_MESSAGE.toLocaleLowerCase() === "false") {
+    logger.info("Broadcasting message disabled.");
+    return [];
+  }
   const currentSubscribers = await getSubscribersList();
   if (!currentSubscribers) {
     logger.error("No subscribers found");
@@ -276,6 +280,42 @@ const notifyAllSubscribers = async (message, options = {}) => {
   return Promise.all(sendPromises);
 };
 
+const notifyOnlyToTester = async (message, options = {}) => {
+  if (!bot) {
+    logger.error("Bot not initialized");
+    return [];
+  }
+  const testerChatId = process.env.TESTER_CHAT_ID;
+  if (!testerChatId) {
+    logger.error("Tester Id is undefined");
+  }
+  logger.info(`Sending notification to only tester`);
+
+  const defaultOptions = { parse_mode: "MarkdownV2" };
+  const messageOptions = { ...defaultOptions, ...options };
+
+  try {
+    await bot.sendMessage(
+      testerChatId,
+      escapeMarkdown(message),
+      messageOptions
+    );
+
+    return {
+      chatId: testerChatId,
+      success: true,
+    };
+  } catch (error) {
+    logger.error(`Failed to send notification to tester`, error);
+
+    return {
+      chatId: testerChatId,
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
 const escapeMarkdown = (text) =>
   text
     .replace(/_/g, "\\_")
@@ -302,4 +342,5 @@ module.exports = {
   removeSubscriberById,
   getSubscribersList,
   notifyAllSubscribers,
+  notifyOnlyToTester,
 };

@@ -1,13 +1,12 @@
 const logger = require("../core/logger/logger");
 const {
   notifyAllSubscribers,
-  initializeTelegramBot,
+  notifyOnlyToTester,
 } = require("../features/telegram");
 const { ExtractedData } = require("../models");
 const { fetchWebpage } = require("./scrapingService");
 const { extractWebPageData } = require("../core/scrapper/extractorManager");
 const ResultPageExtractor = require("../features/resultpage/ResultPageExtractor");
-const HomePageExtractor = require("../features/homepage/HomePageExtractor");
 
 const {
   scheduleJobMinutes,
@@ -124,8 +123,10 @@ const performCheck = async (isManual = false) => {
     monitoringState.lastCheckResult = result;
     monitoringState.checks.successful++;
 
-    // save records to DB
-    await insertExtractedData(pageTableData);
+    // save records to DB only when broadcast mode enabled
+    if(process.env.BRODCAST_TELEGRAM_MESSAGE.toLocaleLowerCase() === "true"){
+      await insertExtractedData(pageTableData);
+    }
 
     if (result.hasChanges) {
       monitoringState.checks.withChanges++;
@@ -196,7 +197,11 @@ const notifySubscribersAboutChanges = async (newRows) => {
     // Format the message
     const message = formatNotificationMessage(newRows);
     // Send notification to all subscribers
-    await notifyAllSubscribers(message);
+    if (process.env.BRODCAST_TELEGRAM_MESSAGE.toLocaleLowerCase() === "true") {
+      await notifyAllSubscribers(message);
+    } else {
+      await notifyOnlyToTester(message);
+    }
 
     logger.info(`Notifications sent about ${newRows.length} new results`);
   } catch (error) {
@@ -211,15 +216,15 @@ const notifySubscribersAboutChanges = async (newRows) => {
  */
 const formatNotificationMessage = (newRows) => {
   // Create message header
-  let message = "🔔 *New Notification Available* 🔔\n\n";
+  let message = "🔔 *New TPSC Notifications * 🔔\n\n";
 
   // Add timestamp
   // message += `Updated at: ${new Date().toLocaleString()}\n\n`;
 
   // Add new results
-  message += `Found ${newRows.length} new result${
+  message += `🔥 Found ${newRows.length} new update${
     newRows.length === 1 ? "" : "s"
-  }:\n\n`;
+  }🔥\n\n`;
 
   // Limit max rows to send in notification
   const rowsToShow = newRows.slice(

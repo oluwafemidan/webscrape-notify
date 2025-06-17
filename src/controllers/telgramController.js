@@ -34,7 +34,8 @@ const getSubscribers = async (req, res) => {
  * @param {Response} res - Express response object
  */
 const pingSubscribers = async (req, res) => {
-  pingAllSubscribers();
+  const message = req.body?.message;
+  pingAllSubscribers(message);
   res.status(200).json({
     success: true,
     message: "Pinged all subscribers successfully",

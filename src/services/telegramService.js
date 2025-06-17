@@ -3,6 +3,7 @@ const {
   addSubscriberById,
   removeSubscriberById,
   notifyAllSubscribers,
+  notifyOnlyToTester,
 } = require("../features/telegram");
 
 // In-memory storage for subscribers
@@ -37,9 +38,16 @@ const getSubscribersList = () => {
   return [...subscribers];
 };
 
-const pingAllSubscribers = () => {
-  notifyAllSubscribers("Ping! This is a test message.");
-  logger.info("Pinged subscribers");
+const pingAllSubscribers = (message) => {
+  if (process.env.BRODCAST_TELEGRAM_MESSAGE.toLocaleLowerCase() === "true") {
+    notifyAllSubscribers(message ? message : "Ping! This is a test message.");
+    logger.info("Pinged subscribers");
+  } else {
+    notifyOnlyToTester(
+      message ? message : "Ping! This is a test message for tester only."
+    );
+    logger.info("Pinged to only tester");
+  }
 };
 
 module.exports = {

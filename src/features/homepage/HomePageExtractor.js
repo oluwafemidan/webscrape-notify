@@ -19,24 +19,23 @@ class HomePageExtractor extends BaseExtractor {
     try {
       const $ = cheerio.load(html);
       const notificationDataRows = [];
-
       let rowCount = 0;
-      // Traverse all list items within the marquee
-      $("marquee ul li").each((index, li) => {
-        if (rowCount >= maxRowToParse) {
-          return notificationDataRows;
-        }
+
+      // Select the first .news-box element
+      const newsBox = $(".news-box").first();
+
+      // Traverse .views-field elements inside ul under .news-box
+      newsBox.find("ul .views-field").each((index, el) => {
+        if (rowCount >= maxRowToParse) return false; // break loop
         rowCount++;
 
-        const anchor = $(li).find("a");
+        const anchor = $(el).find("a");
 
-        // Remove <img> to get clean text only
-        anchor.find("img").remove();
+        if (!anchor || anchor.length === 0) return;
 
         const title = anchor.text().trim();
         let link = anchor.attr("href");
 
-        // Skip if no title
         if (!title) return;
 
         // Handle relative URLs
@@ -50,25 +49,16 @@ class HomePageExtractor extends BaseExtractor {
           id: createRowId({ title }),
         };
 
-        // // simulate new rows
-        // notificationDataRows.push({
-        //   title: "New HOME PAGE NOTIFICATION!!!",
-        //   link: "https://example.com/job/12345",
-        //   id: createRowId({
-        //     title: Math.random().toString(36).substring(2, 10),
-        //   }),
-        // });
-
         notificationDataRows.push(row);
       });
 
       logger.info(
-        `Extracted ${notificationDataRows.length} notificationDataRows from homepage marquee`
+        `Extracted ${notificationDataRows.length} notificationDataRows from .news-box`
       );
       return notificationDataRows;
     } catch (error) {
       console.error(error);
-      logger.error(`Error extracting marquee data: ${error.message}`);
+      logger.error(`Error extracting data from .news-box: ${error.message}`);
       throw error;
     }
   }

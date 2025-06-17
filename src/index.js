@@ -16,6 +16,17 @@ connectDB();
 // Apply middleware
 setupMiddleware(app);
 
+
+app.get("/test", (req, res) =>{
+`x`
+  const value = {
+  key1: "name",
+  key2: "password",
+};
+console.log(value);
+res.send(value);
+})
+
 // Register routes
 app.use("/api", routes);
 
@@ -50,5 +61,7 @@ process.on("uncaughtException", (err) => {
   // For uncaught exceptions, it's safer to exit and let the process manager restart
   process.exit(1);
 });
+
+
 
 module.exports = app;
