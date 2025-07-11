@@ -40,7 +40,7 @@ const startMonitoringService = () => {
     });
 
     if (job) {
-      logger.info(`Job scheduled to check every ${MINUTES} Minutes.`);
+      logger.info(`🕓 Job scheduled to check every ${MINUTES} Minutes.`);
     }
 
     // Update state
@@ -80,7 +80,7 @@ const stopMonitoringService = () => {
 const performCheck = async (isManual = false) => {
   try {
     logger.info(
-      `Performing ${isManual ? "manual" : "scheduled"} check of target website`
+      `🚀 Performing ${isManual ? "manual" : "scheduled"} check of target website for [ ${monitoringState.checks.total} ] times`
     );
 
     const prevExtractedData = await ExtractedData.find();
@@ -240,6 +240,8 @@ const formatNotificationMessage = (newRows) => {
 
     message += `${rowData}\n`;
   });
+
+  message += `\nFollow & share 🤖 @notifymejob_bot\n`
 
   return message;
 };
