@@ -4,11 +4,11 @@ A modular NodeJS web scraping-based notification system for tracking website upd
 
 ## Features
 
-- Monitors a webpage for new entries
-- Sends notifications via Telegram when changes are detected
-- RESTful API for managing subscriptions and monitoring status
-- Configurable check intervals
-- In-memory storage for simplicity
+- Monitors a webpage for new entries.
+- Sends notifications via Telegram when changes are detected.
+- RESTful API for managing subscriptions and monitoring status.
+- Configurable check intervals.
+- In-memory storage for simplicity.
 
 ## Prerequisites
 
