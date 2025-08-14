@@ -53,7 +53,7 @@ class HomePageExtractor extends BaseExtractor {
       });
 
       logger.info(
-        `Extracted ${notificationDataRows.length} notificationDataRows from .news-box`
+        `Extracted ${notificationDataRows.length} notificationDataRows from website's notification section`
       );
       return notificationDataRows;
     } catch (error) {

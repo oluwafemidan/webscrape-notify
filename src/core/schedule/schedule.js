@@ -4,7 +4,7 @@ const logger = require("../logger/logger");
 const scheduledJobs = [];
 
 const options = {
-  timezone: process.env.INDIAN_TIME_ZONE || "Asia/Kolkata",
+  timezone: process.env.TIME_ZONE || "Asia/Kolkata",
 };
 
 const scheduleJobSeconds = (seconds, jobToSchedule) => {

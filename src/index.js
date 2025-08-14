@@ -6,7 +6,9 @@ const logger = require("./core/logger/logger");
 const { setupMiddleware } = require("./middleware");
 const routes = require("./routes");
 const { handleUncaughtErrors } = require("./core/exception/errorHandler");
-const { startMonitoringService } = require("./services/monitoringService");
+const {
+  timeAwareMonitoringService,
+} = require("./services/timeAwareMonitoringService");
 const { initializeTelegramBot } = require("./features/telegram");
 // Create Express application
 const app = express();
@@ -16,16 +18,14 @@ connectDB();
 // Apply middleware
 setupMiddleware(app);
 
-
-app.get("/test", (req, res) =>{
-`x`
+app.get("/test", (req, res) => {
   const value = {
-  key1: "name",
-  key2: "password",
-};
-console.log(value);
-res.send(value);
-})
+    key1: "name",
+    key2: "password",
+  };
+  logger.info("Test route testing...");
+  res.send(value);
+});
 
 // Register routes
 app.use("/api", routes);
@@ -45,8 +45,8 @@ app.listen(PORT, () => {
   );
   // Initialize Telegram bot
   initializeTelegramBot();
-  // Start the monitoring service after server is running
-  startMonitoringService();
+  // Start the time-aware monitoring service (11 AM - 11 PM IST)
+  timeAwareMonitoringService.initialize();
 });
 
 // Handle unhandled promise rejections
@@ -62,6 +62,17 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
+// Handle graceful shutdown
+process.on("SIGINT", () => {
+  logger.info("Received SIGINT. Shutting down gracefully...");
+  timeAwareMonitoringService.shutdown();
+  process.exit(0);
+});
 
+process.on("SIGTERM", () => {
+  logger.info("Received SIGTERM. Shutting down gracefully...");
+  timeAwareMonitoringService.shutdown();
+  process.exit(0);
+});
 
 module.exports = app;

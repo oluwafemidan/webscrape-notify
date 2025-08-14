@@ -29,6 +29,7 @@ const fetchWebpage = async (targetUrl) => {
 
     return response.data;
   } catch (error) {
+    logger.error(error);
     logger.error(`Error fetching webpage: ${error.message}`);
     throw error;
   }

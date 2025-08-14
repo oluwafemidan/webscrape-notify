@@ -2,6 +2,7 @@ const {
   performCheck,
   getMonitoringState,
 } = require("../services");
+const { timeAwareMonitoringService } = require("../services/timeAwareMonitoringService");
 const { ApiError } = require("../core/exception/errorHandler");
 const logger = require("../core/logger/logger");
 
@@ -39,7 +40,21 @@ const triggerManualCheck = async (req, res) => {
   }
 };
 
+/**
+ * Get time-aware monitoring status
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ */
+const getTimeAwareStatus = async (req, res) => {
+  const status = timeAwareMonitoringService.getStatus();
+  res.status(200).json({
+    success: true,
+    data: status,
+  });
+};
+
 module.exports = {
   getMonitoringStatus,
   triggerManualCheck,
+  getTimeAwareStatus,
 };
