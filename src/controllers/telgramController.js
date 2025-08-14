@@ -12,7 +12,7 @@ const { getSubscribersList } = require("../features/telegram");
  * @param {Response} res - Express response object
  */
 const getSubscribers = async (req, res) => {
-  const subscribers = getSubscribersList();
+  const subscribers = await getSubscribersList();
 
   // Hiding sensitive information
   const safeSubscribers = subscribers.map((sub) => ({
