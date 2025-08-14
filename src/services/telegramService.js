@@ -34,8 +34,8 @@ const removeSubscriberByIdFn = (chatId) => {
  * Get all subscribers
  * @returns {Array} List of all subscribers
  */
-const getSubscribersList = () => {
-  return [...subscribers];
+const getSubscribersList = async () => {
+  return [];
 };
 
 const pingAllSubscribers = (message) => {

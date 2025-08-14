@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/subscribers", asyncHandler(getSubscribers));
 
 // Ping all subscribers (admin only)
-router.post("/subscirbers/ping", asyncHandler(pingSubscribers));
+router.post("/subscribers/ping", asyncHandler(pingSubscribers));
 
 // Add a subscriber manually (admin only)
 router.post("/subscribers", asyncHandler(addSubscriber));

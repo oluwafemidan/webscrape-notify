@@ -1,10 +1,10 @@
 const {
-  getSubscribersList,
   addSubscriberByIdFn,
   removeSubscriberByIdFn,
   pingAllSubscribers,
 } = require("../services/telegramService");
 const { ApiError } = require("../core/exception/errorHandler");
+const { getSubscribersList } = require("../features/telegram");
 
 /**
  * Get all current telegram subscribers
